@@ -64,6 +64,7 @@ export interface Reservation {
 export interface IStockManager {
   reserve(productId: string, quantity: number, expiresAt: Date, orderId?: string): Result<Reservation, InsufficientStockError>;
   release(reservationId: string): void;
+  adjustReservation(reservationId: string, newQuantity: number): Result<Reservation, InsufficientStockError>;
   getAvailableStock(productId: string): number;
   getReservation(reservationId: string): Reservation | undefined;
   getReservations(): Reservation[];

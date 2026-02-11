@@ -38,6 +38,22 @@ export class StockManager implements IStockManager {
     this.reservations.delete(reservationId);
   }
 
+  adjustReservation(
+    reservationId: string,
+    newQuantity: number,
+  ): Result<Reservation, InsufficientStockError> {
+    const existing = this.reservations.get(reservationId);
+    if (!existing) {
+      return err(new InsufficientStockError(reservationId, 0, newQuantity));
+    }
+    if (newQuantity <= 0 || newQuantity > existing.quantity) {
+      return err(new InsufficientStockError(existing.productId, existing.quantity, newQuantity));
+    }
+    const updated: Reservation = { ...existing, quantity: newQuantity };
+    this.reservations.set(reservationId, updated);
+    return ok(updated);
+  }
+
   getAvailableStock(productId: string): number {
     const total = this.stock.get(productId) ?? 0;
     let reserved = 0;
