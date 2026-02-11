@@ -286,3 +286,7 @@ Demande :
 4. Aucun fichier > 200 lignes.
 5. Résumé final cycle 3.
 ```
+
+**Résumé de la réponse :** Coverage 99.54% stmts, 98.41% branches. Les 5 invariants I19-I23 sont chacun couverts par au moins un test (I19 et I20 en double protection modifier + stock-manager). 109 tests cycles 1+2 toujours verts + 14 nouveaux = 123 total. Aucun fichier > 200 lignes (max 190). Bilan : 1 composant créé, 2 modifiés, 23 invariants, 43 prompts sur 3 cycles.
+
+**Décision :** Cycle 3 validé. Le coverage reste au-dessus de 99% malgré l'ajout de `adjustReservation` (L71-72 de stock-manager non couvertes = branche d'erreur mineure). La modification de fichiers cycle 1 est la rupture assumée de ce cycle — justifiée par H10 car l'atomicité était impossible autrement. Le `quantity-modifier` est bien isomorphe au `partial-cancellation-handler` sans duplication de logique métier.
