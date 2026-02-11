@@ -1,28 +1,20 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { handlePartialCancellation } from '../src/partial-cancellation-handler';
+import type { PartialCancellationDeps } from '../src/partial-cancellation-handler';
 import { calculateRefund } from '../src/refund-calculator';
 import { applyPromotions } from '../src/promotion-engine';
 import { calculateTotal } from '../src/total-calculator';
 import { StockManager } from '../src/stock-manager';
 import { transition } from '../src/order-state-machine';
-import type { Order, Promotion, Reservation } from '../src/types';
+import type { Order, Reservation } from '../src/types';
 
 const expiresAt = new Date('2026-06-15T11:00:00');
 
-const validPromo: Promotion = {
-  id: 'promo-10',
-  type: 'percentage',
-  value: 10,
-  incompatibleWith: [],
-  validFrom: new Date('2026-06-01'),
-  validUntil: new Date('2026-06-30'),
-};
-
-const deps = {
+const deps: PartialCancellationDeps = {
   calculateRefund,
   applyPromotions,
   calculateTotal,
-  stockManager: new StockManager({}), // remplacé dans beforeEach
+  stockManager: new StockManager({}),
   transition,
 };
 
