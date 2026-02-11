@@ -1,0 +1,22 @@
+# === GLOBAL ENVIRONMENT ===
+.env
+.env.local
+.env.*.local
+node_modules/
+dist/
+
+# PHPStorm / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# === OTHER ===
+.tmp/
+.cache/
