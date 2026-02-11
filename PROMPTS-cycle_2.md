@@ -1,5 +1,3 @@
-Crée le fichier PROMPTS-cycle2.md avec ce contenu :
-
 # Journal des Prompts — Cycle 2 : Remboursement partiel à l'annulation
 
 > **Stack** : TypeScript + Vitest (domaine pur, sans framework web)
@@ -51,7 +49,7 @@ Demande :
 4. Critères de réussite mesurables pour cette feature.
 ```
 
-**Résumé de la réponse :** 5 nouveaux invariants identifiés (I13-I17) couvrant le calcul du remboursement (ancien total - nouveau total recalculé, pas somme brute), le minimum 1 article restant, la libération partielle du stock, la restriction à l'état `paid`, et le refus si remboursement négatif (perte de promo conditionnelle). Impact cycle 1 : aucun fichier existant modifié — les composants actuels (total-calculator, promotion-engine, stock-manager) fonctionnent déjà avec des sous-ensembles d'items. 2 nouveaux fichiers à créer : `partial-cancellation-handler.ts` et `refund-calculator.ts`. 6 critères de réussite (C7-C12).
+**Résumé de la réponse :** 5 nouveaux invariants (I13-I17) couvrant calcul du remboursement, minimum 1 article, libération partielle du stock, restriction à `paid`, refus si remboursement négatif. Impact cycle 1 : aucun fichier modifié. 2 nouveaux fichiers à créer, 6 critères de réussite (C7-C12).
 
 **Décision :** Gardé l'ensemble. Les 5 invariants sont cohérents avec les 12 du cycle 1. L'invariant I17 (remboursement négatif) est le cas limite le plus subtil — il protège contre la perte d'une promo conditionnelle qui augmenterait le total après retrait. Le choix de ne pas modifier les composants existants valide la conception modulaire du cycle 1 (composants composables, interfaces stables). Le périmètre exclut explicitement la modification de quantité (retrait d'article entier uniquement) — cohérent avec YAGNI.
 
@@ -137,7 +135,7 @@ est garantie car chaque opération part de l'état courant."
 ```
 
 
-**Résumé de la réponse :** 4 hypothèses analysées. H6 (calcul remboursement) partiellement validée : la réutilisation de promotion-engine et total-calculator fonctionne, mais il faut passer `order.createdAt` au lieu de `now` pour le recalcul des promos, sinon une promo expirée depuis la commande serait exclue et le nouveau total pourrait être supérieur au payé (violation I17). H7 (état de la commande) validée : pas de nouvel état, `paid` conservé, `refunds[]` pour l'audit. H8 (libération stock) validée : mapping 1 item ↔ 1 réservation garanti par l'orchestrateur, `release()` suffit. H9 (annulations successives) validée : calculator sans état, cohérence mathématique naturelle (somme des remboursements = total initial - total final).
+**Résumé de la réponse :** H6 partiellement validée : réutilisation OK mais il faut passer `order.createdAt` au lieu de `now` pour les promos (sinon violation I17). H7 validée (pas de nouvel état). H8 validée (mapping 1:1 item↔réservation, `release()` suffit). H9 validée (calculator sans état, cohérence mathématique naturelle).
 
 **Décision :** H6 acceptée avec la correction `order.createdAt` — c'est le point critique du cycle 2. H7, H8, H9 validées sans modification. Aucun composant du cycle 1 ne nécessite de changement, confirmant la bonne modularité de l'architecture.
 
@@ -214,7 +212,7 @@ Joue le rôle d'un dev senior sceptique.
    identifier quel token libérer ?
 ```
 
-**Résumé de la réponse :** 3 scénarios de faille identifiés. S7 : mapping item ↔ réservation par productId ambigu si doublons — résolu par une pré-condition d'unicité des productId dans items. S8 : annulation totale après remboursement partiel — le flux cycle 1 ne produit pas de Refund, risque d'historique incomplet — résolu en faisant passer toute annulation (totale ou partielle) par le même handler. S9 : double retrait du même article (idempotence) — le handler doit vérifier l'existence de l'item dans la commande actuelle avant traitement. Le mapping item ↔ réservation est fiable sous condition d'unicité productId, naturelle dans le modèle existant.
+**Résumé de la réponse :** 3 scénarios de faille : S7 (mapping item↔réservation ambigu si doublons → pré-condition unicité productId), S8 (annulation totale après partielle → toute annulation passe par le même handler), S9 (double retrait → vérifier existence avant traitement). Le mapping item↔réservation est fiable sous condition d'unicité.
 
 **Décision :** Les 3 scénarios sont réels et actionnables. S7 : on documente l'unicité productId comme pré-condition (pas besoin d'un nouvel invariant — c'est naturel dans le modèle). S8 : on adopte l'option A (toute annulation avec remboursement passe par le handler) — c'est le changement le plus structurant pour la suite. S9 : vérification d'existence triviale à ajouter dans le handler (guard clause).
 
@@ -305,7 +303,7 @@ _Objectif : générer le code composant par composant, jamais en bloc._
 
 ### P8 - Génération types et refund-calculator (TDD)
 
-**Prompts :**
+**Prompt :**
 
 ```
 Contexte :
@@ -338,7 +336,7 @@ Contrainte : les 88 tests existants doivent toujours passer.
 Vitest run après.
 ```
 
-**Résumé de la réponse :** types.ts étendu : ajout de `Refund`, `RefundResult`, `RefundNegativeError`, `PartialCancellationError`, champ optionnel `refunds?` sur Order. 88 tests cycle 1 inchangés et verts. refund-calculator.ts implémenté : pure fonction `calculateRefund(order, itemsToRemove, promos, deps)` qui filtre les items, recalcule promos avec `order.createdAt` (H6), calcule nouveau total, vérifie I17. 6 tests RED/GREEN couvrant I13, I17, H6, cascade promos, et pureté fonctionnelle. 94 tests passent.
+**Résumé de la réponse :** types.ts étendu (`Refund`, `RefundResult`, erreurs, `refunds?` optionnel). refund-calculator.ts : pure fonction qui recalcule promos avec `order.createdAt` (H6) et vérifie I17. 6 tests RED/GREEN couvrant I13, I17, H6, cascade et pureté. 94 tests passent (88 cycle 1 inchangés).
 
 **Décision :** Gardé tel quel. Le refund-calculator utilise `Set` pour filtrer les items par productId — O(n) au lieu de O(n²). L'interface `RefundCalculatorDeps` type les fonctions injectées, cohérent avec `CreateOrderDeps` du cycle 1. Le test I17 simule un total artificiellement bas (10€ pour une commande à 110€) car nos promos actuelles ne peuvent pas créer ce cas — c'est volontairement un test de garde défensif.
 
@@ -346,7 +344,7 @@ Vitest run après.
 
 ### P9 - Génération partial-cancellation-handler (TDD)
 
-**Prompts :**
+**Prompt :**
 
 ```
 Contexte :
@@ -389,9 +387,13 @@ Vitest run après.
 
 ---
 
+## Phase : Specific Coding
+
+_Objectif : relire le code généré, identifier et corriger les problèmes._
+
 ### P10 - Analyse des décisions implicites du cycle 2
 
-**Prompts :**
+**Prompt :**
 
 ```
 Contexte :
@@ -427,7 +429,7 @@ Ne corrige rien sans mon accord explicite.
 
 ### P11 - Corrections D5, D6, S8 et nettoyage
 
-**Prompts :**
+**Prompt :**
 
 ```
 Applique ces corrections :
@@ -453,11 +455,15 @@ Ne touche pas à D7 (branche I14 calcul trivial) ni D8
 
 **Décision :** Corrections validées. D5 rend le calculator plus pur (il ne décide plus quels items retirer, il calcule sur ce qu'on lui donne). D6 complète l'injectabilité — le handler est maintenant 100% déterministe en test. Le test S8 couvre le scénario le plus critique : la transition d'annulations partielles successives vers une annulation totale, vérifiant que I14, I18 et la libération stock fonctionnent ensemble.
 
-___
+---
+
+## Phase : Vérification
+
+_Objectif : valider la couverture, les contraintes et la qualité finale._
 
 ### P12 - Vérification finale cycle 2
 
-**Prompts :**
+**Prompt :**
 
 ```
 Contexte :
