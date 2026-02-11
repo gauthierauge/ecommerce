@@ -125,6 +125,23 @@ describe('refund-calculator', () => {
     }
   });
 
+  it('retrait d\'un article à 0€ → refund = 0€, accepté', () => {
+    const order = makeOrder({
+      items: [
+        { productId: 'A', quantity: 1, unitPrice: 50 },
+        { productId: 'FREE', quantity: 1, unitPrice: 0 },
+      ],
+      total: 50,
+    });
+    const remaining = [{ productId: 'A', quantity: 1, unitPrice: 50 }];
+    const result = calculateRefund(order, remaining, [], deps);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.refundAmount).toBe(0);
+      expect(result.value.newTotal).toBe(50);
+    }
+  });
+
   it('fonction pure — même input = même output', () => {
     const order = makeOrder({ total: 90 });
     const remaining = [

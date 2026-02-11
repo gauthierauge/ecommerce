@@ -17,7 +17,7 @@ export function handlePayment(
 
   // Vérifier qu'il y a des réservations
   if (order.reservations.length === 0) {
-    return err(new PaymentExpiredError(order.id));
+    return err(new PaymentExpiredError(order.id, 'aucune réservation trouvée'));
   }
 
   // Vérifier qu'aucune réservation n'est expirée (I5, S2)

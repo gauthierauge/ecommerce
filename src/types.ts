@@ -139,8 +139,8 @@ export class ExpiredPromotionError extends Error {
 }
 
 export class PaymentExpiredError extends Error {
-  constructor(orderId: string) {
-    super(`Paiement rejeté : réservation expirée pour la commande ${orderId}`);
+  constructor(orderId: string, reason = 'réservation expirée') {
+    super(`Paiement rejeté : ${reason} pour la commande ${orderId}`);
     this.name = 'PaymentExpiredError';
   }
 }
