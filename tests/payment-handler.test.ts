@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { handlePayment } from '../src/payment-handler';
-import { StockManager } from '../src/stock-manager';
-import { transition } from '../src/order-state-machine';
+import { handlePayment } from '../src/order/payment-handler';
+import { StockManager } from '../src/stock/stock-manager';
+import { transition } from '../src/order/order-state-machine';
 import type { Order } from '../src/types';
 
 function makeOrder(overrides: Partial<Order> = {}): Order {

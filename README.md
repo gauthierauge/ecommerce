@@ -15,24 +15,28 @@ npx vitest run --coverage # coverage 99%+
 
 ```
 src/
-├── types.ts                         # Types, interfaces, Result<T,E>, erreurs
-├── cart-validator.ts                # Validation panier : I6, I9
-├── order-state-machine.ts          # Table déclarative des transitions : I2
-├── stock-manager.ts                # Réservation par tokens + adjustReservation : I1, I4, I21
-├── promotion-engine.ts             # Promos en cascade (%, fixe) : I12
-├── compatibility-checker.ts        # Matrice d'incompatibilité : I3
-├── total-calculator.ts             # Calcul total ≥ 0 : I7
-├── payment-handler.ts              # Paiement + vérif expiration : I5, I8
-├── expiration-checker.ts           # Libération stock expiré : I4
-├── abandoned-cart.ts               # Détection paniers > 24h : I10
-├── order-orchestrator.ts           # Séquencement création commande : I11
-├── refund-calculator.ts            # Calcul remboursement partiel : I13, I17
-├── partial-cancellation-handler.ts # Orchestration annulation partielle : I14-I16, I18
-└── quantity-modifier.ts            # Modification de quantité : I19-I23
+├── types.ts                              # Types, interfaces, Result<T,E>, erreurs
+├── order/                                # Workflow commande (cycle 1)
+│   ├── order-orchestrator.ts             #   Séquencement création commande : I11
+│   ├── order-state-machine.ts            #   Table déclarative des transitions : I2
+│   ├── cart-validator.ts                 #   Validation panier : I6, I9
+│   ├── payment-handler.ts               #   Paiement + vérif expiration : I5, I8
+│   └── abandoned-cart.ts                #   Détection paniers > 24h : I10
+├── stock/                                # Stock & réservation
+│   ├── stock-manager.ts                  #   Réservation par tokens + adjustReservation : I1, I4, I21
+│   └── expiration-checker.ts             #   Libération stock expiré : I4
+├── pricing/                              # Promos & calculs
+│   ├── promotion-engine.ts               #   Promos en cascade (%, fixe) : I12
+│   ├── compatibility-checker.ts          #   Matrice d'incompatibilité : I3
+│   └── total-calculator.ts              #   Calcul total ≥ 0 : I7
+└── refund/                               # Remboursement (cycles 2+3)
+    ├── refund-calculator.ts              #   Calcul remboursement partiel : I13, I17
+    ├── partial-cancellation-handler.ts   #   Orchestration annulation partielle : I14-I16, I18
+    └── quantity-modifier.ts              #   Modification de quantité : I19-I23
 
 tests/
-├── [14 fichiers de tests unitaires]  # 1 par composant
-└── e2e-workflow.test.ts              # 4 scénarios d'intégration bout en bout
+├── [14 fichiers de tests unitaires]      # 1 par composant
+└── e2e-workflow.test.ts                  # 4 scénarios d'intégration bout en bout
 ```
 
 ## Cycles de développement
@@ -58,6 +62,13 @@ Retirer des articles d'une commande payée, recalculer avec promos en cascade, r
 Diminuer la quantité d'un article dans une commande payée, ajustement atomique de la réservation, recalcul avec promos en cascade.
 **Première modification de composants cycle 1** : `stock-manager.ts` (`adjustReservation`) et `types.ts` (`IStockManager`).
 
+### Cycle 4 — Réorganisation par domaine métier
+
+3 prompts (2 rouge + 1 bleu) | 0 test ajouté | Refactoring pur
+
+Réorganisation de `src/` en 4 sous-dossiers (`order/`, `stock/`, `pricing/`, `refund/`).
+Justifié par le seuil YAGNI atteint (14 fichiers, 4 domaines). **0 logique modifiée**, 123 tests toujours verts.
+
 ### Tests e2e
 
 4 scénarios assemblant tous les composants réels (pas de mocks) :
@@ -70,6 +81,7 @@ workflow nominal, paiement expiré, annulation partielle, annulation + expéditi
 | `PROMPTS.md` | Cycle 1 — 23 prompts documentés avec résumé et décision |
 | `PROMPTS-cycle_2.md` | Cycle 2 — 12 prompts documentés avec résumé et décision |
 | `PROMPTS-cycle_3.md` | Cycle 3 — 8 prompts documentés avec résumé et décision |
+| `PROMPTS-cycle_4.md` | Cycle 4 — 3 prompts documentés avec résumé et décision |
 
 ## Chiffres clés
 
@@ -79,9 +91,9 @@ workflow nominal, paiement expiré, annulation partielle, annulation + expéditi
 | Coverage | 99.54% stmts, 98.41% branches |
 | Invariants | 23 (I1-I23) |
 | Cas limites | 11 (S1-S11) |
-| Composants | 15 fichiers src/ |
+| Composants | 15 fichiers src/ (4 dossiers) |
 | Fichier max | 190 lignes (limite : 200) |
-| Prompts | 43 (24 rouge + 19 bleu) |
+| Prompts | 46 (26 rouge + 20 bleu) |
 
 ## Stack
 

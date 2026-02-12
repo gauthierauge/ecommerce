@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateTotal } from '../src/total-calculator';
+import { calculateTotal } from '../src/pricing/total-calculator';
 import type { CartItem, Discount } from '../src/types';
 
 describe('total-calculator', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findAbandonedCarts } from '../src/abandoned-cart';
+import { findAbandonedCarts } from '../src/order/abandoned-cart';
 import type { Cart, Order } from '../src/types';
 
 const now = new Date('2026-06-16T12:00:00');

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { calculateRefund } from '../src/refund-calculator';
-import { applyPromotions } from '../src/promotion-engine';
-import { calculateTotal } from '../src/total-calculator';
+import { calculateRefund } from '../src/refund/refund-calculator';
+import { applyPromotions } from '../src/pricing/promotion-engine';
+import { calculateTotal } from '../src/pricing/total-calculator';
 import type { Order, Promotion } from '../src/types';
 
 const deps = { applyPromotions, calculateTotal };

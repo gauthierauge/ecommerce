@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyPromotions } from '../src/promotion-engine';
+import { applyPromotions } from '../src/pricing/promotion-engine';
 import type { CartItem, Promotion } from '../src/types';
 
 const now = new Date('2026-06-15');

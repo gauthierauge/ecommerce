@@ -1,9 +1,9 @@
-import { PartialCancellationError, err } from './types';
+import { PartialCancellationError, err } from '../types';
 import type {
   Order, CartItem, Promotion, Discount, Refund,
   RefundResult, RefundNegativeError, Result, OrderState,
   IStockManager, InvalidTransitionError,
-} from './types';
+} from '../types';
 import type { RefundCalculatorDeps } from './refund-calculator';
 
 type CalculateRefundFn = (

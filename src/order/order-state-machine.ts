@@ -1,5 +1,5 @@
-import { InvalidTransitionError, ok, err } from './types';
-import type { OrderState, Result } from './types';
+import { InvalidTransitionError, ok, err } from '../types';
+import type { OrderState, Result } from '../types';
 
 export type { OrderState };
 

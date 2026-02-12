@@ -1,4 +1,4 @@
-import type { CartItem, Discount } from './types';
+import type { CartItem, Discount } from '../types';
 
 function computeSubtotal(cart: readonly CartItem[]): number {
   return cart.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
