@@ -1,5 +1,5 @@
-import { CartValidationError, ok, err } from './types';
-import type { CartItem, Result } from './types';
+import { CartValidationError, ok, err } from '../types';
+import type { CartItem, Result } from '../types';
 
 export function validateCart(
   items: readonly CartItem[],

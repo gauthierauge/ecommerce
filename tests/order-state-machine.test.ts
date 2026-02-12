@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { transition, OrderState } from '../src/order-state-machine';
+import { transition, OrderState } from '../src/order/order-state-machine';
 
 describe('order-state-machine', () => {
   describe('transitions valides', () => {

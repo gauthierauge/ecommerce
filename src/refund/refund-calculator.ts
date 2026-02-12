@@ -1,5 +1,5 @@
-import { RefundNegativeError, ok, err } from './types';
-import type { Order, CartItem, Promotion, Discount, RefundResult, Result } from './types';
+import { RefundNegativeError, ok, err } from '../types';
+import type { Order, CartItem, Promotion, Discount, RefundResult, Result } from '../types';
 
 type ApplyPromotionsFn = (cart: readonly CartItem[], promos: readonly Promotion[], now: Date, subtotal: number) => Discount[];
 type CalculateTotalFn = (cart: readonly CartItem[], discounts: readonly Discount[]) => number;

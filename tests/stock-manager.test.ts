@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { StockManager } from '../src/stock-manager';
+import { StockManager } from '../src/stock/stock-manager';
 
 describe('stock-manager', () => {
   let manager: StockManager;

@@ -1,4 +1,4 @@
-import type { CartItem, Promotion, Discount } from './types';
+import type { CartItem, Promotion, Discount } from '../types';
 
 function isValid(promo: Promotion, now: Date): boolean {
   return now >= promo.validFrom && now <= promo.validUntil;

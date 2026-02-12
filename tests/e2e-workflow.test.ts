@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createOrder } from '../src/order-orchestrator';
-import { handlePayment } from '../src/payment-handler';
-import { checkExpirations } from '../src/expiration-checker';
-import { handlePartialCancellation } from '../src/partial-cancellation-handler';
-import { calculateRefund } from '../src/refund-calculator';
-import { validateCart } from '../src/cart-validator';
-import { checkCompatibility } from '../src/compatibility-checker';
-import { applyPromotions } from '../src/promotion-engine';
-import { calculateTotal } from '../src/total-calculator';
-import { StockManager } from '../src/stock-manager';
-import { transition } from '../src/order-state-machine';
+import { createOrder } from '../src/order/order-orchestrator';
+import { handlePayment } from '../src/order/payment-handler';
+import { checkExpirations } from '../src/stock/expiration-checker';
+import { handlePartialCancellation } from '../src/refund/partial-cancellation-handler';
+import { calculateRefund } from '../src/refund/refund-calculator';
+import { validateCart } from '../src/order/cart-validator';
+import { checkCompatibility } from '../src/pricing/compatibility-checker';
+import { applyPromotions } from '../src/pricing/promotion-engine';
+import { calculateTotal } from '../src/pricing/total-calculator';
+import { StockManager } from '../src/stock/stock-manager';
+import { transition } from '../src/order/order-state-machine';
 import type { Cart, CartItem, Promotion } from '../src/types';
 
 const now = new Date('2026-06-15T10:00:00');

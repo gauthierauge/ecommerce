@@ -1,10 +1,10 @@
-import { DuplicateOrderError, ok, err } from './types';
+import { DuplicateOrderError, ok, err } from '../types';
 import type {
   Cart, CartItem, Order, OrderState, Promotion, Discount,
   Reservation, Result, IStockManager,
   CartValidationError, IncompatiblePromotionsError,
   InsufficientStockError, InvalidTransitionError,
-} from './types';
+} from '../types';
 
 const RESERVATION_DURATION_MS = 30 * 60 * 1000; // 30 minutes
 

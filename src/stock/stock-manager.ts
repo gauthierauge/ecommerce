@@ -1,5 +1,5 @@
-import { InsufficientStockError, ok, err } from './types';
-import type { IStockManager, Reservation, Result } from './types';
+import { InsufficientStockError, ok, err } from '../types';
+import type { IStockManager, Reservation, Result } from '../types';
 
 export class StockManager implements IStockManager {
   private stock: Map<string, number>;

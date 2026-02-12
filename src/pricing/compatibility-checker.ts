@@ -1,5 +1,5 @@
-import { IncompatiblePromotionsError, ok, err } from './types';
-import type { Promotion, Result } from './types';
+import { IncompatiblePromotionsError, ok, err } from '../types';
+import type { Promotion, Result } from '../types';
 
 export function checkCompatibility(
   promotions: readonly Promotion[],

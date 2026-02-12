@@ -1,4 +1,4 @@
-import type { Cart, Order } from './types';
+import type { Cart, Order } from '../types';
 
 const ABANDONED_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24h
 

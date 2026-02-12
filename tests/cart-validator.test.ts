@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateCart } from '../src/cart-validator';
+import { validateCart } from '../src/order/cart-validator';
 import type { CartItem } from '../src/types';
 
 describe('cart-validator', () => {

@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { handleQuantityModification } from '../src/quantity-modifier';
-import { calculateRefund } from '../src/refund-calculator';
-import { applyPromotions } from '../src/promotion-engine';
-import { calculateTotal } from '../src/total-calculator';
-import { StockManager } from '../src/stock-manager';
+import { handleQuantityModification } from '../src/refund/quantity-modifier';
+import { calculateRefund } from '../src/refund/refund-calculator';
+import { applyPromotions } from '../src/pricing/promotion-engine';
+import { calculateTotal } from '../src/pricing/total-calculator';
+import { StockManager } from '../src/stock/stock-manager';
 import type { Order, Promotion, Reservation } from '../src/types';
-import type { QuantityModificationDeps } from '../src/quantity-modifier';
+import type { QuantityModificationDeps } from '../src/refund/quantity-modifier';
 
 const now = new Date('2026-06-15T10:00:00');
 const promo10: Promotion = {

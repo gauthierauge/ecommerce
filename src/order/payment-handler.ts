@@ -1,5 +1,5 @@
-import { PaymentExpiredError, ok, err } from './types';
-import type { Order, OrderState, Result, IStockManager, InvalidTransitionError } from './types';
+import { PaymentExpiredError, ok, err } from '../types';
+import type { Order, OrderState, Result, IStockManager, InvalidTransitionError } from '../types';
 
 type TransitionFn = (from: OrderState, to: OrderState) => Result<OrderState, InvalidTransitionError>;
 

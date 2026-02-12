@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { checkCompatibility } from '../src/compatibility-checker';
+import { checkCompatibility } from '../src/pricing/compatibility-checker';
 import type { Promotion } from '../src/types';
 
 const baseDate = new Date('2026-01-01');
