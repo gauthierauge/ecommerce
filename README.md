@@ -95,6 +95,22 @@ workflow nominal, paiement expiré, annulation partielle, annulation + expéditi
 | Fichier max | 190 lignes (limite : 200) |
 | Prompts | 46 (26 rouge + 20 bleu) |
 
+## Documentation par cycle
+
+| Cycle | Résumé | Contexte phases |
+|-------|--------|-----------------|
+| Cycle 1 | `docs/cycle-1/SUMMARY.md` | `.claude/context/cycle-1/` (10 phases) |
+| Cycle 2 | `docs/cycle-2/SUMMARY.md` | `.claude/context/cycle-2/` (10 phases) |
+| Cycle 3 | `docs/cycle-3/SUMMARY.md` | `.claude/context/cycle-3/` (10 phases) |
+| Cycle 4 | `docs/cycle-4/SUMMARY.md` | `.claude/context/cycle-4/` (10 phases) |
+
+## Règles du projet
+
+Voir `docs/rules/README.md` — 9 fichiers de règles couvrant :
+chaîne rouge, chaîne bleue, anti-hallucination, reformulation,
+structure de prompt, minimum 2 prompts, pros/cons, chain-of-thought,
+contraintes code/tests.
+
 ## Stack
 
 **TypeScript** + **Vitest** — domaine pur, pas de Express/React/API/DB.
