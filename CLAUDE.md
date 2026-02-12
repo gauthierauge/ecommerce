@@ -1,5 +1,18 @@
 # Workflow Commande E-commerce — Instructions Agent IA
 
+## Référence obligatoire
+Avant chaque réponse, lis docs/RULES.md — ce sont les
+règles absolues du projet. Elles priment sur tout.
+
+## Règles critiques (résumé)
+- Chaîne rouge = ZÉRO code, tu proposes, tu ne décides pas
+- Chaîne bleue = tu ne corriges RIEN sans accord explicite
+- Minimum 2 prompts par phase (1 demande + 1 challenge)
+- Termine toujours par "À toi : que gardes-tu, modifies-tu, rejettes-tu ?"
+- Cite les numéros d'invariants et les lignes de code exactes
+- Ne passe jamais à la phase suivante sans accord explicite
+- Pour les détails complets → docs/RULES.md
+
 ## Contexte projet
 
 Développement du workflow de commande d'une boutique en ligne :

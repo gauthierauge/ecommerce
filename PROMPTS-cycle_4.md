@@ -127,3 +127,7 @@ Demande :
 Ne change AUCUNE logique. Uniquement des déplacements et
 des mises à jour d'imports.
 ```
+
+**Résumé de la réponse :** 4 dossiers créés (`order/`, `stock/`, `pricing/`, `refund/`). 13 fichiers déplacés avec `git mv`. Tous les imports mis à jour : `./types` → `../types` dans src/, `../src/X` → `../src/dossier/X` dans tests/. Aucun fichier `.ts` restant à la racine de src/ (sauf `types.ts`). 123 tests verts, zéro logique modifiée.
+
+**Décision :** Réorganisation validée. Le `git mv` a bien préservé l'historique Git. La vérification `ls src/*.ts` confirme que seul `types.ts` reste à la racine. Les 123 tests passent sans aucune modification de logique — le critère de réussite P1 est atteint. Le refactoring est un succès : chaque dossier correspond à un domaine métier cohésif.
