@@ -70,6 +70,17 @@ describe('payment-handler', () => {
     expect(result.ok).toBe(false);
   });
 
+  it('expiresAt === now → traité comme expiré (borne inclusive)', () => {
+    const reservation = stockManager.reserve('A', 1, now, 'order-1'); // expire exactement à now
+    const order = makeOrder({
+      state: 'created',
+      reservations: reservation.ok ? [reservation.value] : [],
+    });
+    const result = handlePayment(order, now, stockManager, transition);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.name).toBe('PaymentExpiredError');
+  });
+
   it('paiement sans réservation → rejeté', () => {
     const order = makeOrder({ state: 'created', reservations: [] });
     const result = handlePayment(order, now, stockManager, transition);

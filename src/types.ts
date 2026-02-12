@@ -64,6 +64,7 @@ export interface Reservation {
 export interface IStockManager {
   reserve(productId: string, quantity: number, expiresAt: Date, orderId?: string): Result<Reservation, InsufficientStockError>;
   release(reservationId: string): void;
+  adjustReservation(reservationId: string, newQuantity: number): Result<Reservation, InsufficientStockError>;
   getAvailableStock(productId: string): number;
   getReservation(reservationId: string): Reservation | undefined;
   getReservations(): Reservation[];
@@ -139,8 +140,8 @@ export class ExpiredPromotionError extends Error {
 }
 
 export class PaymentExpiredError extends Error {
-  constructor(orderId: string) {
-    super(`Paiement rejeté : réservation expirée pour la commande ${orderId}`);
+  constructor(orderId: string, reason = 'réservation expirée') {
+    super(`Paiement rejeté : ${reason} pour la commande ${orderId}`);
     this.name = 'PaymentExpiredError';
   }
 }

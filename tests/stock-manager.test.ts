@@ -85,6 +85,56 @@ describe('stock-manager', () => {
     });
   });
 
+  describe('adjustReservation — I21 (ajustement atomique)', () => {
+    it('diminuer qty 3 → 1 : stock libéré de 2', () => {
+      const res = manager.reserve('ARTICLE-A', 3, expiresAt, 'order-1');
+      expect(res.ok).toBe(true);
+      if (!res.ok) return;
+      expect(manager.getAvailableStock('ARTICLE-A')).toBe(7);
+      const adjusted = manager.adjustReservation(res.value.id, 1);
+      expect(adjusted.ok).toBe(true);
+      if (!adjusted.ok) return;
+      expect(adjusted.value.quantity).toBe(1);
+      expect(manager.getAvailableStock('ARTICLE-A')).toBe(9);
+    });
+
+    it('newQty > oldQty → erreur (I19)', () => {
+      const res = manager.reserve('ARTICLE-A', 2, expiresAt, 'order-1');
+      expect(res.ok).toBe(true);
+      if (!res.ok) return;
+      const adjusted = manager.adjustReservation(res.value.id, 5);
+      expect(adjusted.ok).toBe(false);
+    });
+
+    it('newQty === 0 → erreur (I20)', () => {
+      const res = manager.reserve('ARTICLE-A', 2, expiresAt, 'order-1');
+      expect(res.ok).toBe(true);
+      if (!res.ok) return;
+      const adjusted = manager.adjustReservation(res.value.id, 0);
+      expect(adjusted.ok).toBe(false);
+    });
+
+    it('réservation inexistante → erreur', () => {
+      const adjusted = manager.adjustReservation('FAKE-ID', 1);
+      expect(adjusted.ok).toBe(false);
+    });
+
+    it('atomique : stock dispo ne fluctue pas entre opérations', () => {
+      // Réserver tout le stock ARTICLE-B (1 seul)
+      const res = manager.reserve('ARTICLE-B', 1, expiresAt, 'order-1');
+      expect(res.ok).toBe(true);
+      expect(manager.getAvailableStock('ARTICLE-B')).toBe(0);
+      // Réserver 5 sur ARTICLE-A, puis ajuster à 3
+      const resA = manager.reserve('ARTICLE-A', 5, expiresAt, 'order-2');
+      expect(resA.ok).toBe(true);
+      if (!resA.ok) return;
+      // Pendant l'ajustement, le stock ne doit jamais remonter à 5 puis redescendre
+      const adjusted = manager.adjustReservation(resA.value.id, 3);
+      expect(adjusted.ok).toBe(true);
+      expect(manager.getAvailableStock('ARTICLE-A')).toBe(7); // 10 - 3
+    });
+  });
+
   describe('atomicité — I1 (deux réservations sur le dernier article)', () => {
     it('deux réservations sur le dernier article : une réussit, l\'autre échoue', () => {
       const manager1 = new StockManager({ 'RARE': 1 });

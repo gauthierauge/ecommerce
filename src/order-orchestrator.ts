@@ -1,4 +1,4 @@
-import { DuplicateOrderError, err } from './types';
+import { DuplicateOrderError, ok, err } from './types';
 import type {
   Cart, CartItem, Order, OrderState, Promotion, Discount,
   Reservation, Result, IStockManager,
@@ -93,5 +93,5 @@ export function createOrder(
     createdAt: now,
   };
 
-  return { ok: true, value: order };
+  return ok(order);
 }
