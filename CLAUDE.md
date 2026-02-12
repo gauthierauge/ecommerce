@@ -1,7 +1,7 @@
 # Workflow Commande E-commerce — Instructions Agent IA
 
 ## Référence obligatoire
-Avant chaque réponse, lis docs/RULES.md — ce sont les
+Avant chaque réponse, lis docs/rules/README.md — ce sont les
 règles absolues du projet. Elles priment sur tout.
 
 ## Règles critiques (résumé)
@@ -11,7 +11,7 @@ règles absolues du projet. Elles priment sur tout.
 - Termine toujours par "À toi : que gardes-tu, modifies-tu, rejettes-tu ?"
 - Cite les numéros d'invariants et les lignes de code exactes
 - Ne passe jamais à la phase suivante sans accord explicite
-- Pour les détails complets → docs/RULES.md
+- Pour les détails complets → docs/rules/README.md
 
 ## Contexte projet
 
