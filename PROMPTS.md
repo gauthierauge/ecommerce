@@ -127,7 +127,7 @@ total a une source unique de vérité (I7)."
 
 **Résumé de la réponse :** H1 partiellement validée : le compteur simple suffit en single-thread mais il faut garantir que vérification + décrémentation soient dans un seul appel synchrone (pas d'await entre les deux). H2 validée : matrice statique suffisante pour notre périmètre sans règles conditionnelles. H3 validée : séparer promos et calcul de total est bon, à condition de passer un snapshot immutable du panier aux deux.
 
-**Décision :** Tout gardé. H1 est la plus importante : le "partiellement" affine notre compréhension — on sait maintenant que le module stock devra exposer une méthode atomique reserve-or-fail. H2 et H3 confirment des intuitions solides et donnent des contraintes concrètes pour l'architecture.
+**Décision :** H1 est la plus importante : le "partiellement" affine notre compréhension — on sait maintenant que le module stock devra exposer une méthode atomique reserve-or-fail. H2 et H3 confirment des intuitions solides et donnent des contraintes concrètes pour l'architecture (snapshot immutable, matrice statique).
 
 ---
 
@@ -212,7 +212,7 @@ par rapport à nos invariants et au principe KISS.
 
 **Résumé de la réponse :** Problématique 1 (machine à états) : la table déclarative (B) l'emporte sur switch/case (fragile, oublis) et State pattern (over-engineering pour 4 états). Problématique 2 (réservation stock) : les tokens de réservation (B) l'emportent sur le compteur simple (pas de traçabilité ni expiresAt) et la file d'attente (over-engineering en single-thread).
 
-**Décision :** Tout gardé. Table déclarative pour la machine à états = cohérent avec H4 et KISS. Tokens de réservation = bon compromis entre simplicité et respect de I1/I4/I5. Les deux choix rejetés (switch/case et file d'attente) sont clairement hors proportion pour notre périmètre.
+**Décision :** La table déclarative est le bon choix pour la machine à états — cohérent avec H4 et KISS pour 4 états. Les tokens de réservation offrent le bon compromis entre simplicité et respect de I1/I4/I5. Les deux choix rejetés (switch/case et file d'attente) sont clairement hors proportion pour notre périmètre.
 
 ---
 
@@ -257,7 +257,7 @@ avec nos invariants et KISS.
 
 **Résumé de la réponse :** Promos : le Strategy pattern (C) l'emporte — chaque promo est une fonction pure avec la même interface, les incompatibilités (I3) sont gérées par un composant séparé utilisant la matrice statique (H2). Orchestration : hybride A+C recommandé — un orchestrateur central séquence des fonctions pures, sans logique métier. Les événements (B) rendent le flux invisible et sont over-engineering pour notre périmètre.
 
-**Décision :** Tout gardé. Strategy pour les promos = cohérent avec KISS et SRP. L'hybride orchestrateur + fonctions pures est le meilleur compromis entre lisibilité du flux (A) et testabilité (C). Le rejet des événements est pertinent : dans un domaine pur sans infra, un flux explicite vaut mieux qu'un flux implicite.
+**Décision :** Le Strategy pattern pour les promos est cohérent avec KISS et SRP — chaque type de promo isolé, extensible sans modifier l'existant. L'hybride orchestrateur + fonctions pures offre le meilleur compromis entre lisibilité du flux (A) et testabilité (C). Le rejet des événements est pertinent : dans un domaine pur sans infra, un flux explicite vaut mieux qu'un flux implicite.
 
 ---
 
@@ -293,7 +293,7 @@ Joue le rôle d'un développeur senior sceptique.
 
 **Résumé de la réponse :** 5 scénarios identifiés : double-click paiement (I8), paiement après expiration réservation (I5), annulation après paiement (I2 — pas d'état cancelled), panier abandonné avec stock épuisé (I1/I10), promo expirée entre ajout et commande (I3/I7). Deux nouveaux invariants proposés : I11 (unicité commande/panier) et I12 (validité temporelle des promos). Ajout de l'état `cancelled` dans la machine à états.
 
-**Décision :** Tout gardé. L'état `cancelled` est un ajout majeur — la machine à états sans lui était incomplète. I11 et I12 comblent des failles réelles. Les 5 scénarios couvrent les cas limites imposés par le contexte (04_conversation.md). Mis à jour dans docs/INVARIANTS.md et docs/HYPOTHESES.md.
+**Décision :** L'ajout de l'état `cancelled` comble une faille critique dans la machine à états — sans lui, aucune annulation n'était possible. I11 et I12 renforcent la cohérence du modèle en protégeant contre les doublons et les promos périmées. Les 5 scénarios couvrent les cas limites imposés par le contexte (04_conversation.md). Mis à jour dans docs/INVARIANTS.md et docs/HYPOTHESES.md.
 
 ---
 
@@ -327,7 +327,7 @@ Joue le rôle d'un dev senior sceptique.
 
 **Résumé de la réponse :** 4/5 scénarios du P7 sont résolus par les corrections (cancelled, I11, I12). Le double-click paiement est couvert par I11 + table déclarative (transition paid→paid invalide). Le panier abandonné/stock épuisé est acceptable (l'erreur arrive proprement à la réservation). Scénario 6 identifié (modification panier pendant checkout) mais couvert par le snapshot immutable (H3) — point d'attention implémentation, pas de faille structurelle.
 
-**Décision :** Tout gardé. Le modèle est solide après corrections. Pas de nouvel invariant nécessaire, mais un point d'attention pour le code : la commande doit stocker une copie gelée (deep copy) des items du panier. Sauvegardé dans docs/EDGE_CASES.md.
+**Décision :** Le modèle est solide après corrections — les 5 scénarios sont couverts sans nouvel invariant. Le scénario 6 (modification panier pendant checkout) n'est pas une faille structurelle mais un point d'attention implémentation : la commande devra stocker une copie gelée (deep copy) des items du panier. Sauvegardé dans docs/EDGE_CASES.md.
 
 ---
 
@@ -382,7 +382,7 @@ Liste aussi explicitement les transitions INTERDITES
 
 **Résumé de la réponse :** Diagramme complet avec 6 transitions valides et 9 interdites explicites. Effets de bord documentés par transition (stock, paiement, promos, événements). Deux scénarios déroulés : nominal (created→paid→prepared→shipped) et échec (created→cancelled par expiration avec double protection I5 si webhook tardif).
 
-**Décision :** Tout gardé. Le diagramme est complet et cohérent avec I2. Les effets de bord confirment la séparation StateMachine/TransitionHandlers (H4). Les scénarios déroulés valident la logique de bout en bout. Sauvegardé dans docs/STATE_MACHINE.md.
+**Décision :** Le diagramme avec 6 transitions valides et 9 interdites couvre exhaustivement I2. Les effets de bord confirment la séparation StateMachine / TransitionHandlers validée en H4. Les deux scénarios déroulés (nominal + échec) valident la logique de bout en bout sans incohérence. Sauvegardé dans docs/STATE_MACHINE.md.
 
 ---
 
@@ -419,7 +419,7 @@ Pour chaque cas :
 
 **Résumé de la réponse :** 4 dry runs sur transitions invalides : shipped→created, prepared→cancelled, réservation stock=0, cancelled→paid. Dans chaque cas le système rejette sans effet de bord. Deux composants bloquants identifiés : StateMachine (table déclarative) pour les transitions invalides, StockManager (reserve atomique) pour la survente. État cohérent après chaque rejet.
 
-**Décision :** Tout gardé. Les dry runs confirment que le modèle est défensif par design : la table déclarative et la réservation atomique sont des remparts suffisants. Aucun état intermédiaire incohérent possible. Le modèle est prêt pour la phase architecture.
+**Décision :** Les dry runs confirment que le modèle est défensif par design — chaque tentative invalide est rejetée sans effet de bord ni état intermédiaire incohérent. La table déclarative et la réservation atomique sont les deux remparts qui protègent les invariants critiques. Le modèle est prêt pour la phase architecture.
 
 ---
 
@@ -453,7 +453,7 @@ Demande :
 
 **Résumé de la réponse :** Structure de 10 fichiers src/ avec 9 fichiers tests/ correspondants. Chaque composant a une responsabilité unique documentée (inputs/outputs/dépendances). Les 12 invariants (I1-I12) sont mappés chacun à un composant responsable. Diagramme d'interfaces montrant le flux orchestrateur → composants.
 
-**Décision :** Tout gardé. La séparation compatibility-checker / promotion-engine est pertinente (SRP). L'orchestrateur sans logique métier est cohérent avec le choix hybride A+C (P6). Chaque invariant a un responsable unique identifié. Sauvegardé dans docs/ARCHITECTURE.md.
+**Décision :** La séparation compatibility-checker / promotion-engine est pertinente — chacun a une responsabilité unique (SRP). L'orchestrateur sans logique métier est cohérent avec le choix hybride A+C (P6). Chaque invariant a un responsable unique identifié, ce qui facilitera le TDD composant par composant. Sauvegardé dans docs/ARCHITECTURE.md.
 
 ---
 
@@ -551,7 +551,7 @@ Contraintes :
 
 **Résumé de la réponse :** TDD complet. RED : 26 tests écrits couvrant les 6 transitions valides, 8 invalides, états finaux (shipped/cancelled sans sortie), et transitions vers soi-même. GREEN : types.ts (tous les types/interfaces/erreurs de l'architecture) + order-state-machine.ts (table déclarative TRANSITIONS + fonction transition()). 26/26 tests passent. REFACTOR : rien à simplifier, code déjà minimal.
 
-**Décision :** Tout gardé. La table déclarative est exactement conforme à docs/STATE_MACHINE.md. Le type Result<T,E> avec ok()/err() permet un pattern matching propre sans exceptions. Les erreurs typées (InvalidTransitionError, etc.) couvrent tous les cas de docs/ARCHITECTURE.md.
+**Décision :** La table déclarative est exactement conforme à docs/STATE_MACHINE.md — les 6 transitions valides et 9 interdites sont couvertes par 26 tests. Le type Result<T,E> avec ok()/err() permet un pattern matching propre sans exceptions. Les erreurs typées (InvalidTransitionError, etc.) couvrent tous les cas de docs/ARCHITECTURE.md.
 
 ---
 
@@ -599,7 +599,7 @@ Contraintes :
 
 **Résumé de la réponse :** TDD complet. RED : 12 tests couvrant réservation nominale, erreurs I1 (survente, stock=0, produit inexistant), libération I4, calcul stock disponible, atomicité synchrone. GREEN : StockManager avec tokens en Map, reserve() synchrone (H1), release(), getAvailableStock() = total - sum(tokens). 12/12 passent, 38/38 au total.
 
-**Décision :** Tout gardé. Stock disponible calculé dynamiquement (pas de compteur décrémenté), cohérent avec tokens (P5). reserve() synchrone sans await (H1). release() idempotent.
+**Décision :** Le stock disponible est calculé dynamiquement (total - sum(tokens actifs)) plutôt que par un compteur décrémenté — plus robuste et cohérent avec le choix des tokens (P5). reserve() est synchrone sans await (H1), et release() est idempotent, ce qui simplifie la gestion d'erreurs.
 
 ---
 
@@ -651,7 +651,7 @@ Contraintes :
 
 **Résumé de la réponse :** TDD complet. RED : 6 tests compatibility-checker (compatibles, incompatibles dans les deux sens, promo unique, liste vide, 3 promos dont 2 incompatibles) + 7 tests promotion-engine (pourcentage, fixe, multiples, expirée, future, immutabilité panier, liste vide). GREEN : compatibility-checker avec double boucle sur la matrice statique + promotion-engine en strategy pattern avec switch sur le type. 13/13 passent, 51/51 au total.
 
-**Décision :** Tout gardé. Le compatibility-checker vérifie les incompatibilités dans les deux sens (A→B et B→A), cohérent avec I3. Le promotion-engine ne touche pas au panier (H3), filtre les promos invalides temporellement (I12). Le plafonnement I7 sera garanti par total-calculator (SRP).
+**Décision :** Le compatibility-checker vérifie les incompatibilités dans les deux sens (A→B et B→A), couvrant I3 sans ambiguïté. Le promotion-engine ne touche pas au panier (H3) et filtre les promos invalides temporellement (I12). Le plafonnement I7 est volontairement délégué au total-calculator — séparation SRP entre "quelles réductions" et "quel montant".
 
 ---
 
@@ -703,7 +703,7 @@ Contraintes :
 
 **Résumé de la réponse :** TDD complet. RED : 6 tests cart-validator (valide, vide I6, quantité 0/négative I9, prix ≤ 0) + 6 tests total-calculator (sans réduction, pourcentage, fixe, dépassement I7 clamp à 0, multi-articles/réductions, pureté). GREEN : cart-validator valide I6/I9 avec Result, total-calculator = subtotal - discounts avec Math.max(0). 12/12 passent, 63/63 au total.
 
-**Décision :** Tout gardé. Le cart-validator extrait la logique de validation hors de l'orchestrateur (P12). Le total-calculator est une fonction pure de 14 lignes avec clamp à 0 (I7). Les deux sont testables isolément, conformes à docs/ARCHITECTURE.md.
+**Décision :** Le cart-validator extrait la logique de validation hors de l'orchestrateur, validant le challenge du P12. Le total-calculator est une fonction pure de 14 lignes avec clamp à 0 (I7) — c'est le composant le plus simple du système, signe que la responsabilité est bien découpée. Les deux sont testables isolément.
 
 ---
 
@@ -812,7 +812,7 @@ Demande :
 
 **Résumé de la réponse :** Audit des 7 composants : les 6 fonctions pures (transition, validateCart, checkCompatibility, applyPromotions, calculateTotal) sont naturellement injectables. Seul StockManager (classe concrète) manquait d'interface. Ajout de IStockManager dans types.ts avec le contrat reserve/release/getAvailableStock. StockManager implémente désormais IStockManager. 65/65 tests passent.
 
-**Décision :** Tout gardé. L'interface IStockManager permet à l'orchestrateur de dépendre du contrat, pas de l'implémentation. On pourra remplacer StockManager par une implémentation DB sans toucher l'orchestrateur. Les fonctions pures n'ont pas besoin d'interface — le type de la fonction suffit.
+**Décision :** L'interface IStockManager comble le seul couplage concret du système — l'orchestrateur dépend désormais du contrat, pas de l'implémentation. On pourra remplacer StockManager par une implémentation DB sans toucher l'orchestrateur. Les fonctions pures n'ont pas besoin d'interface — le type de la fonction suffit comme contrat.
 
 ---
 
@@ -854,7 +854,7 @@ existants en paramètre, pas en import direct.
 Vitest run après.
 ```
 
-**Résumé de la réponse :** Cycle TDD complet pour les 3 handlers. RED : 14 tests écrits (5 payment-handler, 4 expiration-checker, 5 abandoned-cart) couvrant I4, I5, I8, I10, S1, S2. GREEN : implémentation des 3 fichiers. Un bug détecté dans expiration-checker : la vérification via `transition(state, 'cancelled')` laissait passer les commandes `paid` (transition valide dans la machine), corrigé par un filtre explicite `state === 'created'`. 79 tests passent.
+**Résumé de la réponse :** 3 handlers générés en TDD (14 tests couvrant I4, I5, I8, I10, S1, S2). Bug détecté dans expiration-checker : `transition(state, 'cancelled')` laissait passer les commandes `paid`, corrigé par un filtre explicite `state === 'created'`. 79 tests passent.
 
 **Décision :** Gardé l'ensemble avec une correction importante. Le expiration-checker ne peut pas s'appuyer sur la machine à états pour filtrer les commandes éligibles car `paid → cancelled` est une transition légitime (annulation manuelle). Le checker ne cible que `created` explicitement — cohérent avec I4 (libération du stock à l'expiration) qui ne concerne que les commandes en attente de paiement. Le payment-handler utilise bien la machine à états pour valider `created → paid` et rejette via PaymentExpiredError si réservation expirée ou absente. Le abandoned-cart est une pure fonction de filtrage sans effet de bord, conforme au principe KISS.
 
@@ -899,7 +899,7 @@ Tests à couvrir :
 Vitest run après.
 ```
 
-**Résumé de la réponse :** Cycle TDD complet pour l'orchestrateur. RED : 9 tests écrits couvrant le workflow nominal (avec/sans promo), panier invalide, stock insuffisant, promos incompatibles, unicité I11, snapshot immutable S6, multi-produits, et rollback sur échec partiel de réservation. GREEN : implémentation de `createOrder` avec injection de dépendances via un objet `CreateOrderDeps` typé. L'orchestrateur séquence 6 étapes sans logique métier propre. Le subtotal est obtenu via `calculateTotal(items, [])` pour éviter de dupliquer le calcul. 88 tests passent.
+**Résumé de la réponse :** Orchestrateur généré en TDD. 9 tests couvrant workflow nominal, erreurs (panier invalide, stock insuffisant, promos incompatibles), I11, S6, et rollback sur échec partiel. `createOrder` séquence 6 étapes via injection de `CreateOrderDeps`, sans logique métier propre. 88 tests passent.
 
 **Décision :** Gardé l'ensemble. Points notables validés : (1) Le subtotal est calculé via `calculateTotal(items, [])` plutôt qu'une fonction exportée supplémentaire — cohérent avec YAGNI et la source unique de vérité. (2) Le rollback des réservations partielles est une boucle de release, pas un if métier — c'est de l'orchestration pure. (3) L'ID de commande est généré par un compteur interne simple (`order-${++nextOrderId}`) — suffisant pour du domaine pur sans persistance. (4) La durée de réservation (30 min) est une constante interne — injectable si besoin futur mais YAGNI pour l'instant.
 

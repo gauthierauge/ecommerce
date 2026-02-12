@@ -28,7 +28,27 @@ export interface Order {
   total: number;
   discounts: readonly Discount[];
   reservations: readonly Reservation[];
+  refunds?: readonly Refund[];
   createdAt: Date;
+}
+
+// === Remboursement (Cycle 2) ===
+
+export interface Refund {
+  id: string;
+  orderId: string;
+  removedItems: readonly CartItem[];
+  oldTotal: number;
+  newTotal: number;
+  amount: number;
+  createdAt: Date;
+}
+
+export interface RefundResult {
+  remainingItems: readonly CartItem[];
+  newDiscounts: readonly Discount[];
+  newTotal: number;
+  refundAmount: number;
 }
 
 // === Réservation de stock ===
@@ -129,5 +149,19 @@ export class DuplicateOrderError extends Error {
   constructor(cartId: string) {
     super(`Une commande existe déjà pour le panier ${cartId}`);
     this.name = 'DuplicateOrderError';
+  }
+}
+
+export class RefundNegativeError extends Error {
+  constructor(orderId: string, refundAmount: number) {
+    super(`Remboursement négatif pour ${orderId} : ${refundAmount}€`);
+    this.name = 'RefundNegativeError';
+  }
+}
+
+export class PartialCancellationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'PartialCancellationError';
   }
 }
