@@ -8,7 +8,7 @@ D1, D2, D4 directement sans attendre mon accord.
 **Impact :** P18 a dû contredire une décision déjà appliquée.
 **Solution :** Ajouter systématiquement "Ne corrige rien sans
 mon accord explicite" dans chaque prompt de chaîne bleue.
-**Statut :** Règle ajoutée dans docs/RULES.md.
+**Statut :** Règle ajoutée dans docs/rules/.
 
 ### D2 — Phases sautées en cycle 3
 **Contexte :** Tentative de passer directement de l'Hypothèse
@@ -25,11 +25,11 @@ commençaient par "Tout gardé" — manque d'esprit critique
 apparent.
 **Impact :** Corrigé avant rendu, mais aurait coûté des
 points.
-**Solution :** docs/RULES.md interdit "Tout gardé" et impose
+**Solution :** docs/rules/ interdit "Tout gardé" et impose
 l'analyse en premier.
 **Statut :** Règle ajoutée.
 
-### D4 — Template parasite dans PROMPTS-cycle2.md
+### D4 — Template parasite dans prompts/PROMPTS-cycle_2.md
 **Contexte :** La première ligne contenait "Crée le fichier..."
 — une instruction de prompt, pas du contenu.
 **Impact :** Corrigé au polish.

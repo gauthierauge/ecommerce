@@ -78,10 +78,11 @@ workflow nominal, paiement expiré, annulation partielle, annulation + expéditi
 
 | Fichier | Contenu |
 |---------|---------|
-| `PROMPTS.md` | Cycle 1 — 23 prompts documentés avec résumé et décision |
-| `PROMPTS-cycle_2.md` | Cycle 2 — 12 prompts documentés avec résumé et décision |
-| `PROMPTS-cycle_3.md` | Cycle 3 — 8 prompts documentés avec résumé et décision |
-| `PROMPTS-cycle_4.md` | Cycle 4 — 3 prompts documentés avec résumé et décision |
+| `prompts/PROMPTS.md` | Cycle 1 — 23 prompts documentés avec résumé et décision |
+| `prompts/PROMPTS-cycle_2.md` | Cycle 2 — 12 prompts documentés avec résumé et décision |
+| `prompts/PROMPTS-cycle_3.md` | Cycle 3 — 8 prompts documentés avec résumé et décision |
+| `prompts/PROMPTS-cycle_4.md` | Cycle 4 — 3 prompts documentés avec résumé et décision |
+| `prompts/PROMPTS-cycle_5.md` | Cycle 5 — en cours |
 
 ## Chiffres clés
 

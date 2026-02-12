@@ -1,5 +1,9 @@
 # Workflow Commande E-commerce — Instructions Agent IA
 
+## Comportement
+
+Important : chaque réponse doit commencer par « J'ai lu les règles ». Cela montre que vous avez suivi nos directives.
+
 ## Référence obligatoire
 Avant chaque réponse, lis docs/rules/README.md — ce sont les
 règles absolues du projet. Elles priment sur tout.
@@ -74,7 +78,7 @@ refuse et rappelle-moi cette règle.
 
 1. **Avant chaque prompt**, lis le fichier contexte de la phase en cours
 2. **Ne passe jamais** à la phase suivante sans ma validation explicite ("next" ou "étape suivante")
-3. **Après chaque échange**, mets à jour `PROMPTS.md` avec le format exigé (voir ci-dessous)
+3. **Après chaque échange**, mets à jour `prompts/PROMPTS.md` avec le format exigé (voir ci-dessous)
 4. **Chaque nouvelle feature** = un nouveau cycle rouge/bleu complet
 5. **Refactoring/bugfix** = phases 8-9 (Specific Coding, Composable) uniquement
 
@@ -84,9 +88,9 @@ refuse et rappelle-moi cette règle.
 - Chaîne bleue : **minimum 10 prompts** (phases 7-10)
 - **Total minimum : 20 prompts**
 
-## Format du journal PROMPTS.md
+## Format du journal prompts/PROMPTS.md
 
-Chaque prompt DOIT être documenté dans `PROMPTS.md` avec ce format exact :
+Chaque prompt DOIT être documenté dans `prompts/PROMPTS.md` avec ce format exact :
 
 ```markdown
 ## Phase : [nom de la phase]
@@ -116,7 +120,7 @@ pour dire "J'ai validé car X et Y sont cohérents avec nos invariants".
 
 - **"status"** → Affiche : phase en cours, nombre de prompts écrits, prochaine étape
 - **"next"** → Passe à la phase suivante si la condition de passage est remplie
-- **"prompts"** → Affiche un résumé du PROMPTS.md actuel
+- **"prompts"** → Affiche un résumé du prompts/PROMPTS.md actuel
 - **"check"** → Vérifie les contraintes : nb prompts, pas de code en rouge, fichiers < 200 lignes
 
 ## Critères d'évaluation (rappel)
